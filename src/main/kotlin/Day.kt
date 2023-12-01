@@ -71,6 +71,7 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         inputString = this::class.java.getResourceAsStream(inputFileName("_test"))!!.bufferedReader().readText()
         this.scope()
         testPart("part1", part1Block, expectPart1)
+        this::class.java.getResourceAsStream(inputFileName("_test_02"))?.let { inputString = it.bufferedReader().readText() }
         this.scope()
         testPart("part2", part2Block, expectPart2)
         isTestRun = false
