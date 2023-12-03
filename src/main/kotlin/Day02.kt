@@ -1,5 +1,5 @@
 
-data class CubeSet(
+private data class CubeSet(
     val red: Int,
     val green: Int,
     val blue: Int,
@@ -11,11 +11,11 @@ data class CubeSet(
     fun power() = red * green * blue
 }
 
-val cubesInBag = CubeSet(
+private val cubesInBag = CubeSet(
     12, 13, 14
 )
 
-fun CubeSet(
+private fun CubeSet(
     data: String
 ): CubeSet {
     fun countFor(type: String): Int {
