@@ -20,6 +20,7 @@ fun main() = day(1) {
 
     part2 {
         input.sumOf {
+            // yes I know. At least it works.
             fun compute(input: String, reversed: Boolean): Int {
                 val myDigitStrings = if (reversed) reversedDigitStrings else digitStrings
 
