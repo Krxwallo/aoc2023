@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "2.0.0-Beta1"
 }
 
-group = "net.axay"
+group = "io.github.krxwallo"
 version = "1.0.0"
 
 repositories {
@@ -18,6 +18,7 @@ dependencies {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
+        kotlinOptions.languageVersion = "2.0"
     }
 
     wrapper {

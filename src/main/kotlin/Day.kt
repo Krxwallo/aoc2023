@@ -28,6 +28,7 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
     var expectPart1: Any? = null
     var expectPart2: Any? = null
 
+    @OptIn(com.github.ajalt.mordant.terminal.ExperimentalTerminalApi::class)
     private val terminal = Terminal()
 
     fun part1(block: () -> Any?) {

@@ -1,6 +1,6 @@
 import kotlin.math.pow
 
-data class Card(
+private data class Card(
     val winningNumbers: List<Int>,
     val ownNumbers: List<Int>,
     var count: Int = 1,
@@ -8,7 +8,7 @@ data class Card(
     val ownWinningNumbers get() = ownNumbers.intersect(winningNumbers.toSet())
 }
 
-fun Card(
+private fun Card(
     data: String
 ): Card {
     val numbers = data.substringAfter(":").split(" | ")
