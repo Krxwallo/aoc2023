@@ -11,8 +11,12 @@ repositories {
     mavenCentral()
 }
 
+val ktorVersion = "2.3.6"
+
 dependencies {
     implementation("com.github.ajalt.mordant:mordant:2.0.0-beta9")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
 }
 
 tasks {
