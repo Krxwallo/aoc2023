@@ -1,11 +1,7 @@
-import kotlin.math.pow
-
 val order = listOf("2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A")
 
 data class Hand(val data: List<Int>, val bid: Int) {
-    val cardValue = data.reversed().withIndex().sumOf {
-        it.value * (order.size + 1.0).pow(it.index.toDouble())
-    }
+    val handValue = data.joinToString { it.toChar().toString() }
 
     fun typeValue(allowJoker: Boolean): Int {
         var sortedData = data.sorted()
@@ -58,7 +54,7 @@ fun main() = day(7) {
         // Sort hands
         val rankedHands = getHands(false).sortedWith(compareBy(
             { it.typeValue(false) },
-            { it.cardValue }
+            { it.handValue }
         ))
 
         // Sum up
@@ -71,7 +67,7 @@ fun main() = day(7) {
         // Sort hands
         val rankedHands = getHands(true).sortedWith(compareBy(
             { it.typeValue(true) },
-            { it.cardValue }
+            { it.handValue }
         ))
 
         // Sum up
