@@ -124,12 +124,12 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         println()
 
         isTestRun = true
-        inputString = this::class.java.getResourceAsStream(inputFileName("_test"))!!.bufferedReader().readText()
+        inputString = testInputFile.readText()
         this.scope()
         testPart("part1", part1Block, expectPart1 ?: testOutputFile.let {
             if (it.exists()) it.readText() else ""
         })
-        this::class.java.getResourceAsStream(inputFileName("_test_02"))?.let { inputString = it.bufferedReader().readText() }
+        testInput2File.takeIf { it.exists() }?.let { inputString = it.readText() }
         this.scope()
         testPart("part2", part2Block, expectPart2 ?: testOutput2File.let {
             if (it.exists()) it.readText() else ""
@@ -140,7 +140,7 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         terminal.println(TextColors.gray("Running against real input..."))
         println()
 
-        inputString = this::class.java.getResourceAsStream(inputFileName())!!.bufferedReader().readText()
+        inputString = inputFile.readText()
         this.scope()
         runPart("part1", part1Block)
         this.scope()

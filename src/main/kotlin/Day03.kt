@@ -1,5 +1,3 @@
-private data class Pos(val x: Int, val y: Int)
-
 private data class PartNumber(val pos: Pos, var value: String) {
     val number get() = value.toInt()
     val digitLength get() = value.length
