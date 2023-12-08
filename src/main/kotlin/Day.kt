@@ -20,6 +20,7 @@ fun day(number: Int, scope: Day.() -> Unit) {
     Day(number, scope).scrape().run()
 }
 
+// needs refactoring
 class Day(private val number: Int, val scope: Day.() -> Unit) {
     private fun inputFileName(extra: String = "") = "Day${number.toString().padStart(2, '0')}${extra}.txt"
 
@@ -49,13 +50,17 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         part2Block = block
     }
 
-    private fun testPart(partName: String, part: (() -> Any?)?, expected: Any?) {
+    val passingParts = mutableSetOf<Int>()
+
+    private fun testPart(partN: Int, part: (() -> Any?)?, expected: Any?) {
         if (part != null && expected != null) {
             val actual = part.invoke().toString()
             if (actual != expected.toString()) {
-                terminal.println("${TextColors.red("Failed")} test for $partName! Expected '$expected' but got '$actual' instead")
+                terminal.println("${TextColors.red("Failed")} test for part $partN! Expected '$expected' but got '$actual' instead")
+                passingParts -= partN
             } else {
-                terminal.println("The result of $partName is ${TextColors.green("correct")}.")
+                terminal.println("The result of part $partN is ${TextColors.green("correct")}.")
+                passingParts += partN
             }
         }
     }
@@ -73,7 +78,10 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
                 clipboard.setContents(java.awt.datatransfer.StringSelection(result.toString()), null)
             }
             val msTime = TextColors.brightMagenta("(${time.nanoseconds})")
-            terminal.println("The result of $partName is ${TextStyles.bold(TextColors.brightCyan(result.toString()))} $msTime ${if (copy) TextColors.gray("(copied)") else ""}.")
+            terminal.println("The result of $partName is ${TextStyles.bold(TextColors.brightCyan(result.toString()))} $msTime ${if (copy) TextColors.gray("(copied)") else ""}. ${
+                if (partName.last().digitToInt() in passingParts) " (${TextColors.green("test passed")})"
+                else " (${TextColors.red("test failed")})"
+            }")
         }
     }
 
@@ -126,12 +134,12 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         isTestRun = true
         inputString = testInputFile.readText()
         this.scope()
-        testPart("part1", part1Block, expectPart1 ?: testOutputFile.let {
+        testPart(1, part1Block, expectPart1 ?: testOutputFile.let {
             if (it.exists()) it.readText() else ""
         })
         testInput2File.takeIf { it.exists() }?.let { inputString = it.readText() }
         this.scope()
-        testPart("part2", part2Block, expectPart2 ?: testOutput2File.let {
+        testPart(2, part2Block, expectPart2 ?: testOutput2File.let {
             if (it.exists()) it.readText() else ""
         })
         isTestRun = false
