@@ -18,8 +18,12 @@ fun <T> List<List<T>>.transpose(): List<List<T>> =
         (0 until first().size).map { col -> map { it[col] } }
     }
 
+fun String.counts() = groupingBy { it }.eachCount()
+
 
 fun String.parseInts() = Regex("\\b\\d+\\b").findAll(this).map { it.value.toInt() }.toList()
+
+fun String.parseSignedInts() = Regex("-?\\b\\d+\\b").findAll(this).map { it.value.toInt() }.toList()
 
 fun String.parseLetterGroups(line: String): List<String> {
     val regex = Regex("""([A-Z]+)\s*=\s*\(([A-Z]+),\s*([A-Z]+)\)""")
@@ -54,3 +58,17 @@ fun lcm(n1: Long, n2: Long): Long {
 fun lcm(vararg numbers: Long): Long = numbers.fold(1, ::lcm)
 
 fun lcm(numbers: Collection<Long>): Long = numbers.fold(1, ::lcm)
+
+/**
+ * Return a list with -1 the original size containing the differences of every two neighbours.
+ */
+fun List<Int>.diffs(): List<Int> = let { ints ->
+    buildList {
+        ints.forEachIndexed { index, i ->
+            val i2 = ints.getOrNull(index + 1)
+            if (i2 != null) {
+                add(i2 - i)
+            }
+        }
+    }
+}

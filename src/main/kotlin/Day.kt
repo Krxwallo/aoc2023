@@ -31,6 +31,7 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         }
     var inputLines: List<String> = emptyList()
 
+    var currentPart = 1
     var isTestRun = false
 
     private var part1Block: (() -> Any?)? = null
@@ -133,11 +134,13 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
 
         isTestRun = true
         inputString = testInputFile.readText()
+        currentPart = 1
         this.scope()
         testPart(1, part1Block, expectPart1 ?: testOutputFile.let {
             if (it.exists()) it.readText() else ""
         })
         testInput2File.takeIf { it.exists() }?.let { inputString = it.readText() }
+        currentPart = 2
         this.scope()
         testPart(2, part2Block, expectPart2 ?: testOutput2File.let {
             if (it.exists()) it.readText() else ""
@@ -149,8 +152,10 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
         println()
 
         inputString = inputFile.readText()
+        currentPart = 1
         this.scope()
         runPart("part1", part1Block)
+        currentPart = 2
         this.scope()
         runPart("part2", part2Block)
     }
