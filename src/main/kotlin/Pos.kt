@@ -14,4 +14,16 @@ data class Pos(val x: Int, val y: Int) {
                 Pos(x + dx, y + dy)
             }
         }
+
+    operator fun plus(other: Pos) = Pos(x + other.x, y + other.y)
+
+    operator fun minus(other: Pos) = Pos(x - other.x, y - other.y)
+
+    operator fun times(other: Int) = Pos(x * other, y * other)
+
+    operator fun div(other: Int) = Pos(x / other, y / other)
+
+    operator fun unaryMinus() = Pos(-x, -y)
+
+    override fun toString(): String = "Pos($x/$y)"
 }
