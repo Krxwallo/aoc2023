@@ -6,32 +6,34 @@ NEEDS HEAVY CLEAN UP
  */
 fun main() = day(10) {
     val grid = inputLines.readGrid()
-    val start = grid.firstNotNullOf { if (it.value == 'S') it.key else null }
+    val startPos = grid.filterValues { it == 'S' }.keys.first()
 
-    fun connectionsFor(pipe: Pos): List<Pos> {
-        grid[pipe] ?: return emptyList()
-        val x = pipe.x
-        val y = pipe.y
-        return when (grid[pipe]) {
+    fun connectionsFor(pipePos: Pos): List<Pos> {
+        val (x, y) = pipePos
+        return when (grid[pipePos] ?: return emptyList()) {
             '|' -> listOf(Pos(x, y + 1), Pos(x, y - 1))
             '-' -> listOf(Pos(x + 1, y), Pos(x - 1, y))
             'J' -> listOf(Pos(x - 1, y), Pos(x, y - 1))
             '7' -> listOf(Pos(x - 1, y), Pos(x, y + 1))
             'F' -> listOf(Pos(x + 1, y), Pos(x, y + 1))
             'L' -> listOf(Pos(x, y - 1), Pos(x + 1, y))
-            'S' -> pipe.neighbours
+            'S' -> pipePos.neighbours.filter {
+                // Check neighbours
+                pipePos in connectionsFor(it)
+            }
             else -> emptyList()
         }
     }
 
-    val bigLoop = buildList {
+    // list containing all pipe positions belonging to the big/main loop
+    val mainLoop = buildList {
         var lastPipe: Pos? = null
-        var pipe: Pos = start
+        var pipe: Pos = startPos
         while (add(pipe)) {
             val next = connectionsFor(pipe).firstOrNull {
                 grid[it] != null
                         && it != lastPipe
-                        && it != start
+                        && it != startPos
                         && pipe in connectionsFor(it)
             } ?: break
             lastPipe = pipe
@@ -40,19 +42,17 @@ fun main() = day(10) {
     }
 
     part1 {
-        bigLoop.size / 2
+        mainLoop.size / 2
     }
 
     part2 {
-        val maxX = inputLines.first().count()
-        val maxY = inputLines.count()
         fun Pos.to3x3() = Pos(x * 3, y * 3)
         fun Pos.to1x1() = Pos(x / 3, y / 3)
 
         fun Map<Pos, Char>.printOut() {
             File("Day10_vis.txt").writeText(buildString {
-                (0..<maxY * 3).forEach { y ->
-                    (0..<maxX * 3).forEach { x ->
+                (0..<gridHeight * 3).forEach { y ->
+                    (0..<gridWidth * 3).forEach { x ->
                         append(this@printOut[Pos(x, y)].let { if (it == 'o') ' ' else it } ?: '.')
                     }
                     append("\n")
@@ -61,7 +61,7 @@ fun main() = day(10) {
         }
 
         fun Map<Pos, Char>.floodFill(): Int {
-            val outerTiles = filterKeys { it.x == 0 || it.y == 0 || it.x == maxX * 3 - 1 || it.y == maxY * 3 - 1}
+            val outerTiles = filterKeys { it.x == 0 || it.y == 0 || it.x == gridWidth * 3 - 1 || it.y == gridHeight * 3 - 1}
                 .filterValues { it == 'o' }
 
             printOut()
@@ -88,74 +88,23 @@ fun main() = day(10) {
             allTiles.printOut()
 
             return grid.keys.count { pos1x1 ->
-                val b = (0..2).none { x ->
-                    val b1 = (0..2).any { y ->
-                        val pos3x3 = pos1x1.to3x3() + Pos(x, y)
-
-                        val c = allTiles[pos3x3]
-                        //println("Checking $pos3x3 -> $c")
-                        c == '0' || c == 'x'
-                    }
-                    //println("-----> $b1")
-                    b1
-                }
-                //println("--> $b")
-                b
+                // Checking middle tiles is enough
+                allTiles[pos1x1.to3x3() + Pos(1, 1)] == 'o'
             }
         }
 
         /* Map each tile to 3x3 */
         val mappedTiles = buildMap {
-            grid.forEach { (pos1x1, tile) ->
+            gridPositions.associateWith { grid[it].takeIf { _ -> it in mainLoop } }.forEach { (pos1x1, tile) ->
                 when (tile) {
-                    '|' -> """
-                    oxo
-                    oxo
-                    oxo
-                """.trimIndent()
-
-                    '-' -> """
-                    ooo
-                    xxx
-                    ooo
-                """.trimIndent()
-
-                    'J' -> """
-                    oxo
-                    xxo
-                    ooo
-                """.trimIndent()
-
-                    '7' -> """
-                    ooo
-                    xxo
-                    oxo
-                """.trimIndent()
-
-                    'F' -> """
-                    ooo
-                    oxx
-                    oxo
-                """.trimIndent()
-
-                    'L' -> """
-                    oxo
-                    oxx
-                    ooo
-                """.trimIndent()
-
-                    'S' -> """
-                    oxo
-                    oxo
-                    oxo
-                """.trimIndent() // FIXME
-
-                    '.' -> """
-                    ooo
-                    ooo
-                    ooo
-                """.trimIndent()
-
+                    '|' -> "oxo\noxo\noxo"
+                    '-' -> "ooo\nxxx\nooo"
+                    'J' -> "oxo\nxxo\nooo"
+                    '7' -> "ooo\nxxo\noxo"
+                    'F' -> "ooo\noxx\noxo"
+                    'L' -> "oxo\noxx\nooo"
+                    'S' -> "oxo\noxo\noxo" // TODO don't hardcode start
+                    null -> "ooo\nooo\nooo"
                     else -> panic("Unknown tile $tile")
                 }.lines().readGrid().forEach { (innerPos, innerChar) ->
                     put(pos1x1.to3x3() + innerPos, innerChar)
@@ -163,10 +112,7 @@ fun main() = day(10) {
             }
         }
 
-        println("SIZE: ${bigLoop.size}")
-        mappedTiles.mapValues {
-            if (it.key.to1x1() !in bigLoop) 'o' else it.value
-        }.floodFill()
+        mappedTiles.floodFill()
     }
 
     expectPart2 = 10

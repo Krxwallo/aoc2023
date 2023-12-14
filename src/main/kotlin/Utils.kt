@@ -11,6 +11,10 @@ fun List<String>.readGrid() = buildMap {
     }
 }
 
+val Day.gridWidth get() = inputLines.maxOf { it.length }
+val Day.gridHeight get() = inputLines.size
+val Day.gridPositions get() = (0 until gridWidth).flatMap { x -> (0 until gridHeight).map { y -> Pos(x, y) } }
+
 fun <T> List<List<T>>.transpose(): List<List<T>> =
     if (isEmpty() || this.any { it.isEmpty() }) {
         emptyList()
