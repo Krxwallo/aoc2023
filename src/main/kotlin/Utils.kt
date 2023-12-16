@@ -76,3 +76,13 @@ fun List<Int>.diffs(): List<Int> = let { ints ->
         }
     }
 }
+
+fun <T: Any> Collection<T>.pairs(): List<Pair<T, T>> {
+    val pairs = mutableListOf<Pair<T, T>>()
+    forEachIndexed { index, item ->
+        this@pairs.filterIndexed { i, _ -> i != index }.forEach { other ->
+            if ((item to other) !in pairs && (other to item) !in pairs) pairs.add(item to other)
+        }
+    }
+    return pairs
+}

@@ -7,6 +7,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import java.awt.Toolkit
 import java.io.File
@@ -96,13 +97,26 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
 
     fun scrape(): Day = apply {
         val now = Instant.now()
-        if (testInputFile.exists() && testOutputFile.exists() && inputFile.exists()) {
-            println("Input/output files already exist, skipping scraping")
+        if (inputFile.exists()) {
+            println("Input file already exists, skipping scraping")
             println(testInputFile.absolutePath)
             return@apply
         }
         runBlocking {
             runCatching {
+                val inputReq = client.get("https://adventofcode.com/$YEAR/day/$number/input") {
+                    cookie("session", File(".session").readText())
+                }
+                if (inputReq.status == HttpStatusCode.NotFound) {
+                    terminal.println(TextColors.red("Input not found/not yet available"))
+                    return@runBlocking
+                }
+
+                val input = inputReq.bodyAsText().removeSuffix("\n")
+                inputFile.writeText(input)
+
+                println("Scraped main input.")
+
                 val mainPage = client.get("https://adventofcode.com/$YEAR/day/$number") {
                     cookie("session", File(".session").readText())
                 }
@@ -112,11 +126,6 @@ class Day(private val number: Int, val scope: Day.() -> Unit) {
 
                 testInputFile.writeText(testInput)
                 testOutputFile.writeText(testOutput)
-
-                val input = client.get("https://adventofcode.com/$YEAR/day/$number/input") {
-                    cookie("session", File(".session").readText())
-                }.bodyAsText().removeSuffix("\n")
-                inputFile.writeText(input)
 
                 println("Scraped inputs and outputs in ${Instant.now().minusMillis(now.toEpochMilli()).toEpochMilli()}ms")
             }.onFailure {

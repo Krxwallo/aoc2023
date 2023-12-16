@@ -1,6 +1,6 @@
-data class Step(val start: String, val left: String, val right: String)
+private data class Step(val start: String, val left: String, val right: String)
 
-fun Step(data: String): Step {
+private fun Step(data: String): Step {
     return Step(data.take(3), data.drop(7).take(3), data.dropLast(1).takeLast(3))
 }
 
