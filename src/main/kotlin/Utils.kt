@@ -86,3 +86,17 @@ fun <T: Any> Collection<T>.pairs(): List<Pair<T, T>> {
     }
     return pairs
 }
+
+/**
+ * Get all possible combinations when replacing [toReplace] with either [replacement1] or [replacement2] in the string.
+ */
+fun String.getReplacements(toReplace: Char, replacement1: Char, replacement2: Char): List<String> {
+    val firstIndex = indexOf(toReplace).takeIf { it != -1 } ?: return listOf(this)
+
+    val prefix = substring(0, firstIndex)
+    val suffix = substring(firstIndex + 1)
+    val combinations1 = "$prefix$replacement1$suffix".getReplacements(toReplace, replacement1, replacement2)
+    val combinations2 = "$prefix$replacement2${suffix}".getReplacements(toReplace, replacement1, replacement2)
+
+    return combinations1 + combinations2
+}
