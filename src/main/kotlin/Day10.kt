@@ -51,8 +51,8 @@ fun main() = day(10) {
 
         fun Map<Pos, Char>.printOut() {
             File("Day10_vis.txt").writeText(buildString {
-                (0..<gridHeight * 3).forEach { y ->
-                    (0..<gridWidth * 3).forEach { x ->
+                (0..<bigGridHeight * 3).forEach { y ->
+                    (0..<bigGridWidth * 3).forEach { x ->
                         append(this@printOut[Pos(x, y)].let { if (it == 'o') ' ' else it } ?: '.')
                     }
                     append("\n")
@@ -61,7 +61,7 @@ fun main() = day(10) {
         }
 
         fun Map<Pos, Char>.floodFill(): Int {
-            val outerTiles = filterKeys { it.x == 0 || it.y == 0 || it.x == gridWidth * 3 - 1 || it.y == gridHeight * 3 - 1}
+            val outerTiles = filterKeys { it.x == 0 || it.y == 0 || it.x == bigGridWidth * 3 - 1 || it.y == bigGridHeight * 3 - 1}
                 .filterValues { it == 'o' }
 
             printOut()

@@ -80,9 +80,9 @@ fun main() = day(16) {
         val configurations = buildList {
             grid.keys.forEach { pos ->
                 if (pos.x == 0) add(pos to Direction.RIGHT)
-                if (pos.x == gridWidth - 1) add(pos to Direction.LEFT)
+                if (pos.x == bigGridWidth - 1) add(pos to Direction.LEFT)
                 if (pos.y == 0) add(pos to Direction.DOWN)
-                if (pos.y == gridHeight - 1) add(pos to Direction.UP)
+                if (pos.y == bigGridHeight - 1) add(pos to Direction.UP)
             }
         }
         configurations.maxOf { (pos, dir) -> tryConfiguration(pos, dir) }
