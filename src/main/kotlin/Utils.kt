@@ -33,6 +33,9 @@ fun <T> List<List<T>>.transpose(): List<List<T>> =
         (0 until first().size).map { col -> map { it[col] } }
     }
 
+@JvmName("stringListTranspose")
+fun List<String>.transpose() = map { it.toList() }.transpose()
+
 fun String.counts() = groupingBy { it }.eachCount()
 
 
@@ -96,4 +99,22 @@ fun <T: Any> Collection<T>.pairs(): List<Pair<T, T>> {
         }
     }
     return pairs
+}
+
+fun <T> Collection<T>.splitAt(item: T): List<List<T>> {
+    val result = mutableListOf<List<T>>()
+    val currentList = mutableListOf<T>()
+
+    for (element in this) {
+        if (element == item) {
+            result.add(currentList.toList())
+            currentList.clear()
+        } else {
+            currentList.add(element)
+        }
+    }
+
+    result.add(currentList.toList())
+
+    return result
 }
